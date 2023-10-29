@@ -11,7 +11,7 @@ const handleUserLogin = (email, password) => {
         let isCorrectPassword = await compareUserPassword(email, password);
         if (isCorrectPassword) {
           userData.errCode = 0;
-          userData.errMessage = "OK";
+          userData.message = "OK";
           let userInfo = await db.User.findOne({
             where: { email },
             attributes: ["email", "roleId"],
@@ -70,6 +70,32 @@ const compareUserPassword = (email, userPassword) => {
   });
 };
 
+let getUser = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let listUsers = [];
+      if (id === "all") {
+        listUsers = await db.User.findAll({
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      } else if (id) {
+        listUsers = await db.User.findOne({
+          where: { id },
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      }
+      resolve(listUsers);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   handleUserLogin,
+  getUser,
 };
