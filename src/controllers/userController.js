@@ -40,12 +40,19 @@ let handleCreateUser = async (req, res) => {
 
 let handleEditUser = async (req, res) => {
     let data = req.body;
+    if (!data.email) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'We need email of user to delete',
+        });
+    }
     let message = await userService.editInfoUser(data);
     return res.status(200).json(message);
 };
 
 let handleDeleteUser = async (req, res) => {
-    let id = req.body.id;
+    let id = req.query.id;
+
     if (!id) {
         return res.status(200).json({
             errCode: 1,
@@ -56,10 +63,25 @@ let handleDeleteUser = async (req, res) => {
     return res.status(200).json(message);
 };
 
+const getAllCode = async (req, res) => {
+    const type = req.query.type;
+    if (type) {
+        const data = await userService.handleGetAllCode(type);
+        return res.status(200).json(data);
+    } else {
+        const data = {
+            errCode: 1,
+            message: 'Type is required',
+        };
+        return res.status(200).json(data);
+    }
+};
+
 module.exports = {
     handleLogin,
     handleGetUser,
     handleCreateUser,
     handleEditUser,
     handleDeleteUser,
+    getAllCode,
 };

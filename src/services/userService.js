@@ -14,7 +14,7 @@ const handleUserLogin = (email, password) => {
                     userData.message = 'OK';
                     let userInfo = await db.User.findOne({
                         where: { email },
-                        attributes: ['email', 'roleId'],
+                        attributes: ['email', 'roleId', 'firstName', 'lastName'],
                     });
                     userData.data = userInfo;
                 } else {
@@ -95,6 +95,8 @@ let getUser = (id) => {
 let createNewUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const regex =
+                /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
             // Check email is exist
             if (!data.email || !data.password) {
                 resolve({
@@ -108,6 +110,11 @@ let createNewUser = (data) => {
                     errCode: 1,
                     message: 'Email already exists',
                 });
+            } else if (!regex.test(data.email)) {
+                resolve({
+                    errCode: 3,
+                    message: 'Email invalid',
+                });
             } else {
                 const saltRounds = 10;
                 let hashPasswordByBcrypt = await bcrypt.hashSync(data.password, saltRounds);
@@ -120,8 +127,8 @@ let createNewUser = (data) => {
                     phoneNumber: data.phoneNumber,
                     gender: data.gender,
                     image: data.image,
-                    roleId: data.roleId,
-                    positionId: data.positionId,
+                    roleId: data.role,
+                    positionId: data.position,
                 });
                 resolve({
                     errCode: 0,
@@ -137,7 +144,6 @@ let createNewUser = (data) => {
 let editInfoUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log(data);
             if (!data.email) {
                 resolve({
                     errCode: 2,
@@ -199,10 +205,30 @@ let deleteUser = (id) => {
     });
 };
 
+const handleGetAllCode = (type) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const res = await db.Allcode.findAll({
+                where: { type },
+            });
+            resolve({
+                errCode: 0,
+                data: res,
+            });
+        } catch (error) {
+            reject({
+                errCode: -1,
+                message: 'Error from server',
+            });
+        }
+    });
+};
+
 module.exports = {
     handleUserLogin,
     getUser,
     createNewUser,
     editInfoUser,
     deleteUser,
+    handleGetAllCode,
 };
