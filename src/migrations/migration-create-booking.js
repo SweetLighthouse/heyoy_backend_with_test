@@ -9,10 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      typeStatus: {
-        type: Sequelize.STRING,
-      },
-      keyStatus: {
+      statusId: {
         type: Sequelize.STRING,
       },
       doctorId: {
@@ -25,6 +22,9 @@ module.exports = {
         type: Sequelize.DATE,
       },
       timeType: {
+        type: Sequelize.STRING,
+      },
+      token: {
         type: Sequelize.STRING,
       },
       createdAt: {
