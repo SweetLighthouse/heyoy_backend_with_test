@@ -1,4 +1,5 @@
 import db from '../models';
+import _ from 'lodash'
 
 const createExaminationSchedule = (data) => {
     return new Promise(async (resolve, reject) => {

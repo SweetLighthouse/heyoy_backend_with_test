@@ -1,5 +1,4 @@
 import db from '../models';
-import _ from 'lodash';
 import { checkParamValid } from '../util/commonUtil';
 import { sendInvoiceAndRemedyEmail } from './emailService';
 
