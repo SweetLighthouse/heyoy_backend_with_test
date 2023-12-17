@@ -14,7 +14,7 @@ const handleQuantityGetDoctor = async (req, res) => {
         let response = await doctorService.handleQuantityGetDoctor(+limit);
         return res.status(200).json(response);
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -35,7 +35,7 @@ const handleGetDoctorBySpecialtyAndProvince = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -55,7 +55,7 @@ const handleGetDoctorByClinic = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -75,7 +75,7 @@ const handleCreateDetailDoctor = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -96,7 +96,7 @@ const handleGetDetailDoctor = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -117,7 +117,7 @@ const handleSendInvoiceRemedy = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });

@@ -13,7 +13,7 @@ const handlePostBookAppointment = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server: ',
         });
@@ -33,7 +33,7 @@ const handleVerifyBookAppointment = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server: ',
         });
@@ -59,7 +59,7 @@ const handleGetPatientByDoctorAndDate = async (req, res) => {
             return res.status(200).json(response);
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server: ',
         });
@@ -79,7 +79,7 @@ const handleGetAppointmentByPatient = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });

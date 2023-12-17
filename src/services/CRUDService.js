@@ -1,34 +1,82 @@
 import bcrypt from 'bcryptjs';
 import db from '../models';
+import { checkParamValid } from '../util/commonUtil';
 const salt = bcrypt.genSaltSync(10);
 
 let createNewUser = async (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let hashPasswordFromBcrypt = await hashUserPassword(data.password);
-            await db.User.create({
-                email: data.email,
-                password: hashPasswordFromBcrypt,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                phoneNumber: data.phoneNumber,
-                gender: data.gender,
-                roleId: data.roleId,
-                positionId: data.positionId,
-            });
-            resolve('Create user successfully');
+            let isValidObj = checkParamValid(data, [
+                'email',
+                'password',
+                'firstName',
+                'lastName',
+                'address',
+                'phoneNumber',
+                'gender',
+                'image',
+                'role',
+            ]);
+            if (isValidObj.isValid) {
+                const regex =
+                    /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+                // Check email is exist
+                let isEmailExist = await checkUserEmail(data.email);
+                if (isEmailExist) {
+                    resolve({
+                        errCode: 1,
+                        message: 'Email already exists',
+                    });
+                } else if (!regex.test(data.email)) {
+                    resolve({
+                        errCode: 3,
+                        message: 'Email invalid',
+                    });
+                } else {
+                    const saltRounds = 10;
+                    let hashPasswordByBcrypt = await bcrypt.hashSync(data.password, saltRounds);
+                    await db.User.create({
+                        email: data.email,
+                        password: hashPasswordByBcrypt,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        address: data.address,
+                        phoneNumber: data.phoneNumber,
+                        gender: data.gender,
+                        image: data.image,
+                        roleId: data.role,
+                        positionId: data.position,
+                    });
+                    resolve({
+                        errCode: 0,
+                        message: 'Create user successfully',
+                    });
+                }
+            } else {
+                resolve({
+                    errCode: 4,
+                    message: `Missing parameters ${isValidObj.invalidElement}`,
+                });
+            }
         } catch (error) {
             reject(error);
         }
     });
 };
 
-let hashUserPassword = (password) => {
+const checkUserEmail = (userEmail) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let hashPassword = await bcrypt.hashSync(password, salt);
-            resolve(hashPassword);
+            let isEmailExist = await db.User.findOne({
+                where: {
+                    email: userEmail,
+                },
+            });
+            if (isEmailExist) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
         } catch (error) {
             reject(error);
         }

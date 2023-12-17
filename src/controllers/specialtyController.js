@@ -13,7 +13,7 @@ const handleCreateSpecialty = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -33,7 +33,7 @@ const handleGetQuantitySpecialty = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -50,7 +50,7 @@ const handleGetDetailSpecialty = async (req, res) => {
             return res.status(200).json({ errCode: 1, message: 'Missing id of specialty' });
         }
     } catch (error) {
-        return res.status(200).json({ errCode: -1, message: 'Error from server' });
+        return res.status(500).json({ errCode: -1, message: 'Error from server' });
     }
 };
 

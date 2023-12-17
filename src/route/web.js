@@ -2,17 +2,18 @@ import express from 'express';
 import homeController from '../controllers/homeController';
 import userController from '../controllers/userController';
 import doctorController from '../controllers/doctorController';
-import scheduleController from '../controllers/scheduleController'
+import scheduleController from '../controllers/scheduleController';
 import patientController from '../controllers/patientController';
 import specialtyController from '../controllers/specialtyController';
-import clinicController from '../controllers/clinicController'
+import clinicController from '../controllers/clinicController';
 
 let router = express.Router();
 
 let initWebRoutes = (app) => {
+    // server
     router.get('/', homeController.getHomePage);
     router.get('/create-crud', homeController.createUser);
-    router.post('/post-crud', homeController.postCRUD);
+    router.post('/post-user', homeController.postCRUD);
     router.get('/get-crud', homeController.displayGetCRUD);
     router.get('/edit-crud', homeController.editCRUD);
     router.post('/put-crud', homeController.putCRUD);
@@ -25,6 +26,7 @@ let initWebRoutes = (app) => {
     router.put('/api/update-user', userController.handleEditUser);
     router.delete('/api/delete-user', userController.handleDeleteUser);
     router.get('/api/get-all-code', userController.getAllCode);
+    router.get('/api/search', userController.search)
 
     // doctor
     router.get('/api/get-quantity-doctor', doctorController.handleQuantityGetDoctor);
@@ -53,7 +55,6 @@ let initWebRoutes = (app) => {
     router.post('/api/create-clinic', clinicController.handleCreateClinic);
     router.get('/api/get-quantity-clinic', clinicController.handleGetQuantityClinic);
     router.get('/api/get-detail-clinic', clinicController.handleGetDetailClinic);
-
 
     return app.use('/', router);
 };

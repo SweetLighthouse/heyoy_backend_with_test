@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-const db = require('../models');
+import bcrypt from 'bcryptjs';
 import { sendVerificationEmail } from './emailService';
 import { checkEmailValid, checkParamValid } from '../util/commonUtil';
+const db = require('../models');
 require('dotenv').config();
 
 const postBookAppointment = (data) => {
@@ -57,7 +58,6 @@ const postBookAppointment = (data) => {
                         patientId: data.userId,
                         birthday: data.birthday,
                         profession: data.profession,
-                        reason: data.reason,
                     });
                     let user = await db.User.findOne({ where: { id: userId } });
                     userEmail = user.email;
@@ -81,11 +81,13 @@ const postBookAppointment = (data) => {
                         return;
                     }
                     userEmail = data.email;
+                    const saltRounds = 10;
+                    let hashPasswordByBcrypt = await bcrypt.hashSync('123456', saltRounds);
                     let user = await db.User.findOrCreate({
                         where: { email: data.email },
                         defaults: {
                             email: data.email,
-                            password: '123456',
+                            password: hashPasswordByBcrypt,
                             firstName: firstName,
                             lastName: lastName,
                             address: data.address,
@@ -105,12 +107,21 @@ const postBookAppointment = (data) => {
                     // If email is not existed => create
                     else if (user && user[1] === true) {
                         userId = user[0].id;
-                        await db.Patient_Info.create({
-                            patientId: user[0].id,
-                            birthday: data.birthday,
-                            profession: data.profession,
-                            reason: data.reason,
+                        let isPatientExist = await db.Patient_Info.findOrCreate({
+                            where: { patientId: userId },
+                            defaults: {
+                                patientId: user[0].id,
+                                birthday: data.birthday,
+                                profession: data.profession,
+                            },
                         });
+                        if (!isPatientExist[1]) {
+                            let patient = await db.Patient_Info.findOrCreate({
+                                where: { patientId: userId },
+                            });
+                            patient.birthday = data.birthday;
+                            patient.profession = data.profession;
+                        }
                     }
                 }
                 let token = uuidv4();
@@ -119,6 +130,7 @@ const postBookAppointment = (data) => {
                         doctorId: data.doctorId,
                         patientId: userId,
                         date: data.date,
+                        reason: data.reason,
                         timeType: data.time,
                     },
                     defaults: {
@@ -231,7 +243,7 @@ const handleGetPatientByDoctorAndDate = (doctorId, date) => {
                 include: [
                     {
                         model: db.Patient_Info,
-                        attributes: ['birthday', 'reason'],
+                        attributes: ['birthday'],
                         include: [
                             {
                                 model: db.User,

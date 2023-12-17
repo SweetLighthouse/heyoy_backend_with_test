@@ -1,6 +1,7 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
 import { checkParamValid } from '../util/commonUtil';
+const { Op } = require('sequelize');
 
 const handleUserLogin = (email, password) => {
     return new Promise(async (resolve, reject) => {
@@ -223,10 +224,75 @@ const handleGetAllCode = (type) => {
                 data: res,
             });
         } catch (error) {
-            reject({
-                errCode: -1,
-                message: 'Error from server',
+            reject(error);
+        }
+    });
+};
+
+const search = (keyword) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let data = {};
+
+            // search in specialty
+            let listSpecialties = await db.Specialty.findAll({
+                where: {
+                    name: {
+                        [Op.like]: `%${keyword || ''}%`,
+                    },
+                },
+                attributes: ['id', 'name', 'image'],
             });
+            if (listSpecialties?.length > 0) {
+                data = {
+                    ...data,
+                    specialty: [...listSpecialties],
+                };
+            }
+
+            // search in clinic
+            let listClinics = await db.Clinic.findAll({
+                where: {
+                    name: {
+                        [Op.like]: `%${keyword || ''}%`,
+                    },
+                },
+                attributes: ['id', 'name', 'image'],
+            });
+            if (listClinics?.length > 0) {
+                data = {
+                    ...data,
+                    clinic: [...listClinics],
+                };
+            }
+
+            // search in doctor
+            let listDoctors = await db.User.findAll({
+                where: {
+                    [Op.or]: {
+                        firstName: { [Op.like]: `%${keyword || ''}%` },
+                        lastName: { [Op.like]: `%${keyword || ''}%` },
+                    },
+                    roleId: 'R2',
+                },
+                attributes: ['id', 'firstName', 'lastName', 'image'],
+                include: [{ model: db.Allcode, as: 'positionData', attributes: ['valueEn', 'valueVi'] }],
+                raw: false,
+                nest: true,
+            });
+            if (listDoctors?.length > 0) {
+                data = {
+                    ...data,
+                    doctor: [...listDoctors],
+                };
+            }
+
+            resolve({
+                errCode: 0,
+                data,
+            });
+        } catch (error) {
+            reject(error);
         }
     });
 };
@@ -238,4 +304,5 @@ module.exports = {
     editInfoUser,
     deleteUser,
     handleGetAllCode,
+    search,
 };

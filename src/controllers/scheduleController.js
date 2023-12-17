@@ -13,7 +13,7 @@ const handleCreateExaminationSchedule = async (req, res) => {
             });
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
@@ -35,7 +35,7 @@ const handleGetExaminationSchedule = async (req, res) => {
             return res.status(200).json(data);
         }
     } catch (error) {
-        return res.status(200).json({
+        return res.status(500).json({
             errCode: -1,
             message: 'Error from server',
         });
