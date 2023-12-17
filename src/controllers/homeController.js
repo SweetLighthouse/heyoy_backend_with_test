@@ -19,7 +19,6 @@ let createUser = async (req, res) => {
 
 let postCRUD = async (req, res) => {
     let response = await CRUDService.createNewUser(req.body);
-    console.log(response);
     if (response?.errCode === 0) {
         return res.send('Create user successfully');
     } else {

@@ -52,6 +52,8 @@ const postBookAppointment = (data) => {
                     userEmail = '',
                     firstName = '',
                     lastName = '';
+
+                // If booking for yourself
                 if (data.who === 'BF1') {
                     userId = data.userId;
                     await db.Patient_Info.create({
@@ -63,7 +65,10 @@ const postBookAppointment = (data) => {
                     userEmail = user.email;
                     firstName = user.firstName;
                     lastName = user.lastName;
+
+                    // If booking for relatives
                 } else if (data.who === 'BF2') {
+                    // Name separation
                     let fullName = data.fullName.replace(/\s+/g, ' ').trim();
                     let arr = fullName.split(' ');
                     if (data.language === 'vi') {
@@ -130,7 +135,6 @@ const postBookAppointment = (data) => {
                         doctorId: data.doctorId,
                         patientId: userId,
                         date: data.date,
-                        reason: data.reason,
                         timeType: data.time,
                     },
                     defaults: {
@@ -138,6 +142,7 @@ const postBookAppointment = (data) => {
                         doctorId: data.doctorId,
                         patientId: userId,
                         date: data.date,
+                        reason: data.reason,
                         timeType: data.time,
                         token: token,
                     },
