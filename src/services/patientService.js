@@ -12,7 +12,6 @@ const postBookAppointment = (data) => {
             if (data?.who === 'BF1') {
                 isValidObj = checkParamValid(data, [
                     'who',
-                    'birthday',
                     'profession',
                     'reason',
                     'userId',
@@ -58,7 +57,6 @@ const postBookAppointment = (data) => {
                     userId = data.userId;
                     await db.Patient_Info.create({
                         patientId: data.userId,
-                        birthday: data.birthday,
                         profession: data.profession,
                     });
                     let user = await db.User.findOne({ where: { id: userId } });
@@ -96,6 +94,7 @@ const postBookAppointment = (data) => {
                             firstName: firstName,
                             lastName: lastName,
                             address: data.address,
+                            birthday: data.birthday,
                             phoneNumber: data.phoneNumber,
                             gender: data.gender,
                             roleId: 'R3',
@@ -116,7 +115,6 @@ const postBookAppointment = (data) => {
                             where: { patientId: userId },
                             defaults: {
                                 patientId: user[0].id,
-                                birthday: data.birthday,
                                 profession: data.profession,
                             },
                         });
@@ -124,7 +122,6 @@ const postBookAppointment = (data) => {
                             let patient = await db.Patient_Info.findOrCreate({
                                 where: { patientId: userId },
                             });
-                            patient.birthday = data.birthday;
                             patient.profession = data.profession;
                         }
                     }
@@ -248,11 +245,10 @@ const handleGetPatientByDoctorAndDate = (doctorId, date) => {
                 include: [
                     {
                         model: db.Patient_Info,
-                        attributes: ['birthday'],
                         include: [
                             {
                                 model: db.User,
-                                attributes: ['firstName', 'lastName', 'address', 'gender', 'email'],
+                                attributes: ['firstName', 'lastName', 'address', 'gender', 'birthday', 'email'],
                                 include: [
                                     {
                                         model: db.Allcode,

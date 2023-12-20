@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
     Patient_Info.init(
         {
             patientId: DataTypes.INTEGER,
-            birthday: DataTypes.DATE,
             profession: DataTypes.STRING,
         },
         {
