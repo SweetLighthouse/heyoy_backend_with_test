@@ -1,10 +1,11 @@
 import { Sequelize } from 'sequelize';
 
 // Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('medical_register', 'root', null, {
+const sequelize = new Sequelize('medical_register', 'someuser1', '@12#$%65', {
     host: 'localhost',
     dialect: 'mysql',
     logging: false,
+    port: 3311
 });
 
 const connectDB = async () => {
